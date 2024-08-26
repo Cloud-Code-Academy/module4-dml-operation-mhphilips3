@@ -30,16 +30,12 @@ public with sharing class DMLOperations {
      * @return The Id of the newly created Account.
      */
     public static Id insertNewAccount() {
-        // Create a new Account instance
-        Account acc = new Account();
-        // Set some fields on the Account
-        acc.Name = 'HW 4 Q1 Account';
-        acc.NumberOfEmployees = 35;
-
-        // Insert the Account into the database
-        insert acc;
-        // Return the Id of the newly created Account
-        return acc.Id;
+        
+        Account acc = new Account();    // Create a new Account instance       
+        acc.Name = 'HW 4 Q1 Account';   // Set some fields on the Account
+        acc.NumberOfEmployees = 35;        
+        insert acc;                     // Insert the Account into the database       
+        return acc.Id;                  // Return the Id of the newly created Account
     }
 
     /**
@@ -48,13 +44,10 @@ public with sharing class DMLOperations {
      * @param name The name of the account to be created.
      * @param industry The industry of the account to be created.
      */
-    public static void createAccount(String name, String industry) {
-        // Create a new Account and set the fields inline
-        Account acc = new Account (Name = name, Industry = industry);
-        // Insert the Account
-        insert acc;
+    public static void createAccount(String name, String industry) {       
+        Account acc = new Account (Name = name, Industry = industry); // Create a new Account and set the fields inline      
+        insert acc;  // Insert the Account
     }
-
     
     /**
      * Question 3
@@ -62,19 +55,15 @@ public with sharing class DMLOperations {
      * @param accountId The Id of the Account to link the Contact to.
      * @return The Id of the newly created Contact.
      */
-    public static Id insertNewContact(Id accountId) {
-        // Create a new Contact instance
-        Contact cont = new Contact();
-        // Set some fields on the Contact
-        cont.FirstName = 'Calvin';
+    public static Id insertNewContact(Id accountId) {       
+        Contact cont = new Contact(); // Create a new Contact instance                                     
+        cont.FirstName = 'Calvin';    // Set some fields on the Contact
         cont.LastName = 'Hobbes';
-        cont.Title = 'Chief Trouble Maker';
-        // Set the AccountId field to the given accountId
-        cont.AccountId = accountId;
-        // Insert the Contact into the database
-        insert cont;
-        // Return the Id of the newly created Contact
-        return cont.Id;
+        cont.Title = 'Chief Trouble Maker';        
+        cont.AccountId = accountId; // Set the AccountId field to the given accountId
+        
+        insert cont;                // Insert the Contact into the database        
+        return cont.Id;             // Return the Id of the newly created Contact
     }
 
     /**
@@ -86,11 +75,9 @@ public with sharing class DMLOperations {
      */
     public static void updateContactLastName(Id contactId, String newLastName) {
         // Retrieve the Contact from the database
-        // [SELECT Id FROM Contact WHERE Id = :contactId]
-
-        // Update the Contact's last name
-
-        // Update the Contact in the database
+        Contact cont = [SELECT Id FROM Contact WHERE Id = :contactId];        
+        cont.LastName = newLastName;    // Update the Contact's last name        
+        update cont;                    // Update the Contact in the database
     }
 
     /**
