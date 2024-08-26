@@ -88,12 +88,10 @@ public with sharing class DMLOperations {
      * @param newStage The new stage for the Opportunity.
      */
     public static void updateOpportunityStage(Id oppId, String newStage) {
-        // Retrieve the Opportunity from the database
-        // [SELECT Id FROM Opportunity WHERE Id = :oppId]
-
-        // Update the Opportunity's stage
-
-        // Update the Opportunity in the database
+        
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Id = :oppId];  // Retrieve the Opportunity from the database
+        opp.StageName = newStage;   // Update the Opportunity's stage
+        update opp;                 // Update the Opportunity in the database
     }
 
     /**
