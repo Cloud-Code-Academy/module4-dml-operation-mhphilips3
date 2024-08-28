@@ -199,11 +199,13 @@ public with sharing class DMLOperations {
      * @param leadNames The list of Lead names to be inserted.
      */
     public static void insertAndDeleteLeads(List<String> leadNames) {
-        // Loop through each Lead name
-
-        // Insert the Leads
-
-        // Delete the Leads
+        List<Lead> newLeads = new List<Lead>();
+        for(String leadName : leadNames){       // Loop through each Lead name
+            Lead newLead = new Lead(LastName = leadName, Company = 'Test Company');
+            newLeads.add(newLead);
+        }
+        insert newLeads;        // Insert the Leads
+        delete newLeads;        // Delete the Leads
     }
 
 
