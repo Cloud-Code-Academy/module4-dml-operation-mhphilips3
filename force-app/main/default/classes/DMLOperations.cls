@@ -17,7 +17,7 @@
  * The methods within this class serve as practical examples of different DML operations,
  * allowing developers to learn through practice and examples.
  *
- * @author Your Name
+ * @author Malcolm Philips
  */
 
 
@@ -216,8 +216,12 @@ public with sharing class DMLOperations {
      * @param numOfCases The number of cases to create.
      */
     public static void createAndDeleteCases(String accountId, Integer numOfCases) {
-        // Insert the cases
-
-        // Delete the cases
+        List<Case> newCases = new List<Case>(); 
+        for(Integer i=0; i<numOfCases; i++){
+            Case newCase = new Case (Subject = 'Case ' + i+1, AccountId = accountId);
+            newCases.add(newCase);
+        }        
+        insert newCases;    // Insert the cases
+        delete newCases;    // Delete the cases
     }
 }
