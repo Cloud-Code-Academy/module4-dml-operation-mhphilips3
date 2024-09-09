@@ -175,6 +175,47 @@ public with sharing class DMLOperations {
 		upsert acct;                        		// Upsert the Account
 		return acct;
 	}
+    
+    /**
+     * Utility 9.5
+     * Created to facilitate Question 10
+	 * Inserts a list of Accounts with specified names.
+	 * For each account in the list:
+        * If the Account with the given name already exists, update the description to "Updated Account".
+	    * If no such Account exists, it creates a new one and sets the description to "New Account".
+	 * @param accountName The name of the Account to be upserted.
+	 * @return The Account that was upserted.
+	 */
+	
+    public static Map<String, Id> insertAccounts(Set<String> acctNamesSet) {
+		// Query for the Account
+        if (acctNamesSet.isEmpty()){
+            return null;
+        }
+        Map<String, Id> nameToIdMap = new Map<String, Id>();
+        List<Account> accounts = new List<Account>([SELECT Id, Name FROM Account WHERE Name IN :acctNamesSet]);
+		if (!accounts.isEmpty()){                   //if Accounts exist...
+            for(Account acct : accounts){               // iterate through the Accounts
+                acctNamesSet.remove(acct.Name);         // remove the Account's name from Set
+                nameToIdMap.put(acct.Name, acct.Id);    // add Account's Name & Id to Map
+            }
+        } 
+        accounts.clear();                           // clears the list
+        for (String acctName: acctNamesSet){        // Iterate through (remaining) Set of Names, for each name...
+            Account newAccount = new Account(       // create a new Account, setting the Name and Description fields
+                Name = acctName);
+            accounts.add(newAccount);               //Add new account to the List -- accounts            
+        } 
+        insert accounts;                        	// Insert the new Accounts
+        for (Account acct : accounts){
+            nameToIdMap.put(acct.Name, acct.Id);
+        }
+		return nameToIdMap;
+	}
+    
+    
+
+
 
     /**
      * Question 10
@@ -186,10 +227,15 @@ public with sharing class DMLOperations {
 	 * @param contactsToUpsert List of Contacts to be upserted and linked to accounts.
 	 */
 	public static void upsertAccountsWithContacts(List<Contact> contactsToUpsert) {
-		for(Contact contactToUpsert : contactsToUpsert){            // Loop through each Contact// Extract the Account Name from Contact's LastName 
-		    Account acct = upsertAccount(contactToUpsert.LastName); // Get the account based on the name or create one if it doesn't exist  
-            contactToUpsert.AccountId = acct.Id;                    // Link the Contact to its Account using the Account Id
-        }
+		Set<String> acctNamesSet= new Set<String>();               //Create Set to hold account Names
+        for(Contact contactToUpsert : contactsToUpsert){            // Loop through each Contact
+		   acctNamesSet.add(contactToUpsert.LastName);              // Extract the Account Name from Contact's LastName, add to Set 
+        }    
+            
+        Map<String, Id> contNameToAcctIdMap = insertAccounts(acctNamesSet); // Send the set to insertAccounts method to create new accounts & return Map of Contact Names to Account Ids.  
+        for (Contact cont : contactsToUpsert){                              //Iterate through the Contacts
+            cont.AccountId = contNameToAcctIdMap.get(cont.LastName);        // Link the Contact to its Account using the Map
+        }                
         upsert contactsToUpsert;    // Upsert the Contacts
 	}
 
