@@ -1,3 +1,21 @@
+## Malcolm's Notes
+Q8
+I must have radically overthought this, but I was getting stuck on the updating side of the upsert.  I have made a habit of doing "Scratch Work" in a separate project's anonymous apex file.  While testing this out (and watching what happens in the org itself), upserting the Account only having the Name would continually create new accounts, so I tried to start out with a SOQL query to pull in the Id to upsert on, but that's clearly not the right way: 
+
+List<String> oppNames = new List<String> {'Opp1', 'Opp2', 'Opp3'};
+String acctName = 'Q8 Account1';
+Account acct = [SELECT Id FROM Account WHERE Name = :acctName LIMIT 1];
+If (acct == null){
+    acct.Name = acctName;
+    upsert acct;
+} 
+
+This question goes the same for the Opps -- without an Id or external Id, does it actually prevent duplication here?  Is that because it's using the Account Id??
+
+Exasperated, I just tried the simplified version I ended up with, honestly hoping a different testing error message would give me a better angle to attack the solution from and was shocked that it worked because in my anonymous apex testing, it would happily create a duplicate account rather than update the account already sitting in the org!  
+
+This is the first time in HW that getting it right was not satisfying!
+
 # Developer Kickstart Module 4: DML Operations
 
 This repository is part of the Developer Kickstart Module 4 curriculum at Cloud Code Academy. It's designed to help beginner Salesforce developers learn and practice the fundamental operations of the Data Manipulation Language (DML) in Apex. The focus is on the Insert, Update, Upsert, and Delete operations, all of which are essential in manipulating Salesforce data.
