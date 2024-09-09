@@ -138,17 +138,35 @@ public with sharing class DMLOperations {
      * @param oppNames The list of Opportunity names.
      */
     public static void upsertOpportunities(String accountName, List<String> oppNames) {
-        Account acc = new Account (Name = accountName);
-        List<Opportunity> oppList = new List<Opportunity>();
-        upsert acc;
         
-        for (String oppName : oppNames){        // Loop through each Opportunity name
-            Opportunity opp = new Opportunity(
-                Name = oppName,                 // Create an Opportunity with the given name
-                StageName = 'Prospecting',
-                CloseDate = (Date.today()).addDays(7),                   
-                AccountId = acc.Id);    
-            oppList.add(opp);               // Add the Opportunity to the list                 
+        List<Account> accounts =[SELECT Id, Name                                    
+                                FROM Account 
+                                WHERE Name = :accountName];
+        Account acct = new Account();                        
+        if (!accounts.isempty()){                   //checks for existing account
+            acct = accounts[0];            
+        } else {                                    // otherwise, create a new Account
+            acct.Name = accountName;
+        }   
+        upsert acct;                        		// Upsert the Account
+                                
+        List<Opportunity> oppList = new List<Opportunity>([SELECT Id, Name FROM Opportunity WHERE Name IN :oppNames]);
+        Set<String>oppNamesSet = new Set<String> (oppNames);
+        if (!oppList.isempty()){
+            for(Opportunity opp : oppList){
+                opp.AccountId = acct.Id;
+                oppNamesSet.remove(opp.Name);
+            }
+        }
+        if (!oppNamesSet.isempty()){
+            for (String oppName : oppNamesSet){        // Loop through each Opportunity name
+                Opportunity opp = new Opportunity(
+                    Name = oppName,                 // Create an Opportunity with the given name
+                    StageName = 'Prospecting',
+                    CloseDate = (Date.today()).addDays(7),                   
+                    AccountId = acct.Id);    
+                oppList.add(opp);               // Add the Opportunity to the list                 
+            }
         }
     upsert oppList;
     }
